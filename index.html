@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HUB360+ · Enviar peça</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5C1F2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#5C1F2E;
+    --wine-dark:#401520;
+    --blush:#F3E6E2;
+    --paper:#FAF6F3;
+    --ink:#2A2220;
+    --ink-soft:#6E5F5C;
+    --line:#E4D6D1;
+    --ok:#3C6B4A;
+    --ok-bg:#E7F1EA;
+    --err:#A5382E;
+    --err-bg:#FBEAE8;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:0 0 48px;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+    padding:28px 20px 0;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--wine);
+    font-weight:600;
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:30px;
+    line-height:1.15;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .sub{
+    color:var(--ink-soft);
+    font-size:14px;
+    line-height:1.5;
+    margin:0 0 28px;
+  }
+
+  /* signature element: look-book capture frame */
+  .frame-wrap{
+    position:relative;
+    margin-bottom:22px;
+  }
+  .frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:3/4;
+    border-radius:var(--radius);
+    background:var(--blush);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border:1px solid var(--line);
+  }
+  .frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .frame-empty{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    color:var(--wine);
+  }
+  .frame-empty svg{width:34px;height:34px;}
+  .frame-empty span{
+    font-size:13px;
+    font-weight:500;
+    color:var(--wine-dark);
+  }
+  .corner{
+    position:absolute;
+    width:22px;
+    height:22px;
+    border-color:var(--wine);
+    opacity:0.55;
+  }
+  .corner.tl{top:14px;left:14px;border-top:2px solid var(--wine);border-left:2px solid var(--wine);}
+  .corner.tr{top:14px;right:14px;border-top:2px solid var(--wine);border-right:2px solid var(--wine);}
+  .corner.bl{bottom:14px;left:14px;border-bottom:2px solid var(--wine);border-left:2px solid var(--wine);}
+  .corner.br{bottom:14px;right:14px;border-bottom:2px solid var(--wine);border-right:2px solid var(--wine);}
+  .frame input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+  }
+  .retake{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    background:rgba(42,34,32,0.72);
+    color:#fff;
+    font-size:12px;
+    font-weight:500;
+    padding:7px 12px;
+    border-radius:999px;
+    pointer-events:none;
+  }
+
+  fieldset{border:none;padding:0;margin:0 0 18px;}
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:7px;
+  }
+  select, input[type=text], input[type=number]{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    appearance:none;
+  }
+  select:focus, input:focus{
+    outline:2px solid var(--wine);
+    outline-offset:1px;
+  }
+  .select-wrap{position:relative;}
+  .select-wrap::after{
+    content:"";
+    position:absolute;
+    right:16px;
+    top:50%;
+    width:8px;
+    height:8px;
+    border-right:1.5px solid var(--ink-soft);
+    border-bottom:1.5px solid var(--ink-soft);
+    transform:translateY(-65%) rotate(45deg);
+    pointer-events:none;
+  }
+  .price-wrap{position:relative;}
+  .price-wrap .prefix{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--ink-soft);
+    font-size:16px;
+    pointer-events:none;
+  }
+  .price-wrap input{padding-left:38px;}
+
+  button.submit{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:var(--wine);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s ease, opacity .15s ease;
+  }
+  button.submit:hover{background:var(--wine-dark);}
+  button.submit:disabled{opacity:0.55;cursor:default;}
+
+  .status{
+    margin-top:16px;
+    padding:13px 14px;
+    border-radius:12px;
+    font-size:13.5px;
+    line-height:1.5;
+    display:none;
+  }
+  .status.show{display:block;}
+  .status.ok{background:var(--ok-bg);color:var(--ok);}
+  .status.err{background:var(--err-bg);color:var(--err);}
+
+  .footer-note{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-top:24px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <p class="eyebrow">HUB360+</p>
+  <h1>Enviar peça para vídeo</h1>
+  <p class="sub">Tire uma foto da peça, escolha a loja e preencha os dados — o vídeo de venda é gerado automaticamente.</p>
+
+  <form id="pieceForm">
+    <div class="frame-wrap">
+      <div class="frame" id="frameBox">
+        <div class="frame-empty" id="frameEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8a2 2 0 0 1 2-2h1.2l.8-1.4A1 1 0 0 1 8.87 4h6.26a1 1 0 0 1 .87.6L16.8 6H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.4"/></svg>
+          <span>Toque para fotografar a peça</span>
+        </div>
+        <img id="preview" alt="" style="display:none;">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <span class="retake" id="retakeTag" style="display:none;">Trocar foto</span>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" required>
+      </div>
+    </div>
+
+    <fieldset>
+      <label for="cliente">Loja</label>
+      <div class="select-wrap">
+        <select id="cliente" required>
+          <option value="" disabled selected>Selecione a loja</option>
+          <option value="diss-miss">Diss Miss</option>
+          <option value="dmister">Dmister</option>
+          <option value="outro">Outra loja</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <label for="produto">Nome da peça</label>
+      <input type="text" id="produto" placeholder="Ex: Vestido bordô drapeado" required>
+    </fieldset>
+
+    <fieldset>
+      <label for="preco">Preço</label>
+      <div class="price-wrap">
+        <span class="prefix">R$</span>
+        <input type="number" id="preco" inputmode="decimal" step="0.01" min="0" placeholder="99,00" required>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="submit" id="submitBtn">Enviar peça</button>
+    <div class="status" id="statusBox"></div>
+  </form>
+
+  <p class="footer-note">HUB360+ · gestão de e-commerce</p>
+</div>
+
+<script>
+  // Troque pela URL pública do webhook do n8n (ngrok ou domínio fixo)
+  const WEBHOOK_URL = "https://espionage-press-iron.ngrok-free.dev/webhook/upload-produto";
+
+  const photoInput = document.getElementById('photoInput');
+  const preview = document.getElementById('preview');
+  const frameEmpty = document.getElementById('frameEmpty');
+  const retakeTag = document.getElementById('retakeTag');
+  const form = document.getElementById('pieceForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusBox = document.getElementById('statusBox');
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    preview.style.display = 'block';
+    frameEmpty.style.display = 'none';
+    retakeTag.style.display = 'block';
+  });
+
+  function setStatus(kind, msg){
+    statusBox.className = 'status show ' + kind;
+    statusBox.textContent = msg;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusBox.className = 'status';
+
+    const file = photoInput.files[0];
+    if (!file){
+      setStatus('err', 'Adicione uma foto da peça antes de enviar.');
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('cliente', document.getElementById('cliente').value);
+    fd.append('produto', document.getElementById('produto').value);
+    fd.append('preco', document.getElementById('preco').value);
+    fd.append('foto', file, file.name || 'peca.jpg');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch(WEBHOOK_URL, { method: 'POST', body: fd });
+      if (!res.ok) throw new Error('status ' + res.status);
+      setStatus('ok', 'Peça enviada! Já começamos a gerar o vídeo — você recebe o resultado em breve.');
+      form.reset();
+      preview.style.display = 'none';
+      frameEmpty.style.display = 'flex';
+      retakeTag.style.display = 'none';
+    } catch (err) {
+      setStatus('err', 'Não foi possível enviar agora. Verifique sua conexão e tente novamente.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar peça';
+    }
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
